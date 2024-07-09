@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\POST;
+
 use Illuminate\Http\Request;
 
 class POSTController extends Controller
@@ -14,30 +17,32 @@ class POSTController extends Controller
     {
         //
         $post= POST::get();
-        return response()->json([
-            'message'=>'Lists of POST',
-            '$posts'=>$post,
-
-        ],200);
+       return $this->successfulResponse($post);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         //
-        $post = new POST;
-        $post->title = $request->title;
-        $post->content=$request->content;
-        $post->save();
+       
+        $post=POST::create($request->validated());
         return response()->json([
             'message'=>'Data is stored successfully!',
             '$posts'=>$post,
 
         ],200);
     }
+public function showAll(){
+     $posts = POST::get();
 
+     return response()->json([
+        'message'=>'all post is showed!',
+        '$posts'=>$posts,
+
+    ],200);
+}
     /**
      * Display the specified resource.
      */
@@ -47,22 +52,22 @@ class POSTController extends Controller
         $post = POST::find($id);
 
         return response()->json([
-            'message'=>'Data is show successfully!',
+            'message'=>'Post is showed!',
             '$posts'=>$post,
 
-        ],200);
+        ],200); 
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, POST $post)
+    public function update(UpdatePostRequest $request, POST $post)
     {
         //
     
-        $post->title = $request->title??$post->title;
-        $post->content=$request->content??$post->content;
-        $post->save();
+       
+        $post->update($request->validated());
+
         return response()->json([
             'message'=>'Post updated!',
             '$posts'=>$post,
@@ -78,10 +83,11 @@ class POSTController extends Controller
     {
         //
 
- return response()->json([
-            'message'=>'Post Deleted!',
+        return response()->json([
+            'message'=>'Post is deleted!',
             '$posts'=>$post->delete(),
 
         ],200);
+
     }
 }
